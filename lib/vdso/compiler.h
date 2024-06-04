@@ -1,8 +1,5 @@
 /*
- * Sigreturn trampoline for returning from a signal when the SA_RESTORER
- * flag is not set.
- *
- * Copyright (C) 2012 ARM Limited
+ * Userspace implementations of fallback calls
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -15,23 +12,13 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * Author: Will Deacon <will.deacon@arm.com>
  */
 
-#include <linux/linkage.h>
-#include <asm/unistd.h>
+#ifndef __VDSO_COMPILER_H
+#define __VDSO_COMPILER_H
 
-	.text
+#error	"vdso: Provide architectural overrides such as ARCH_PROVIDES_TIMER,"
+#error	"      DEFINE_FALLBACK and __arch_counter_get or any overrides. eg:"
+#error	"      vdso entry points or compilation time helpers."
 
-	nop
-ENTRY(__kernel_rt_sigreturn)
-	.cfi_startproc
-	.cfi_signal_frame
-	.cfi_def_cfa	x29, 0
-	.cfi_offset	x29, 0 * 8
-	.cfi_offset	x30, 1 * 8
-	mov	x8, #__NR_rt_sigreturn
-	svc	#0
-	.cfi_endproc
-ENDPROC(__kernel_rt_sigreturn)
+#endif /* __VDSO_COMPILER_H */
