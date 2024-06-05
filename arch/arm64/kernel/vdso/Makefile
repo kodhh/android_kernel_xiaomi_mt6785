@@ -16,18 +16,16 @@ obj-vdso-c := $(addprefix $(obj)/, $(obj-vdso-c))
 obj-vdso   := $(obj-vdso-c) $(obj-vdso-s)
 
 ldflags-y := -shared -nostdlib -soname=linux-vdso.so.1  --hash-style=sysv \
-		--build-id -n -T
+		--build-id $(call ld-option,-n) -T
 ccflags-y := -fno-stack-protector
 ccflags-y += -DDISABLE_BRANCH_PROFILING -ffixed-x18
 ccflags-y += $(DISABLE_LTO)
+ccflags-y += -O3
 
-# Force -O2 to avoid libgcc dependencies
+# Force -O3 to avoid libgcc dependencies
 CFLAGS_REMOVE_vgettimeofday.o = -pg -Os
-CFLAGS_vgettimeofday.o = -fPIC
-ifeq ($(cc-name),clang)
-CFLAGS_vgettimeofday.o = -O3
-else
-CFLAGS_vgettimeofday.o = -O2
+CFLAGS_vgettimeofday.o = -O3 -fPIC
+ifneq ($(cc-name),clang)
 CFLAGS_vgettimeofday.o += -mcmodel=tiny
 endif
 

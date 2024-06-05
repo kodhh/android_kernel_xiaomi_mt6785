@@ -5,15 +5,15 @@
 # A mix between the arm64 and arm vDSO Makefiles.
 
 ifeq ($(cc-name),clang)
-  CC_ARM32 := $(CC) $(CLANG_TARGET_ARM32) $(CLANG_GCC32_TC) $(CLANG_PREFIX32)
+  CC_ARM32 := $(CC) $(CLANG_TARGET_ARM32)
 else
-  CC_ARM32 := $(CROSS_COMPILE_ARM32)gcc
+  CC_ARM32 := $(CROSS_COMPILE_ARM32)$(cc-name)
 endif
 
-ifeq ($(cc-name),clang)
-  LD_COMPAT := ld.lld
+ifneq ($(LLVM),)
+LD_COMPAT ?= $(LD)
 else
-  LD_COMPAT := $(CROSS_COMPILE_ARM32)ld
+LD_COMPAT ?= $(CROSS_COMPILE_COMPAT)ld
 endif
 
 # Same as cc-*option, but using CC_ARM32 instead of CC
@@ -72,11 +72,7 @@ VDSO_CFLAGS += -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
                -Werror-implicit-function-declaration \
                -Wno-format-security \
                -std=gnu89
-ifeq ($(cc-name),clang)
 VDSO_CFLAGS  += -O3
-else
-VDSO_CFLAGS  += -O2
-endif
 # Some useful compiler-dependent flags from top-level Makefile
 VDSO_CFLAGS += $(call cc32-option,-Wdeclaration-after-statement,)
 VDSO_CFLAGS += $(call cc32-option,-Wno-pointer-sign)
@@ -166,7 +162,7 @@ quiet_cmd_vdsosym = VDSOSYM $@
       cmd_vdsosym = $(NM) $< | $(gen-vdsosym) | LC_ALL=C sort > $@
 
 # Install commands for the unstripped file
-quiet_cmd_vdso_install = INSTALL $@
+quiet_cmd_vdso_install = INSTALL32 $@
       cmd_vdso_install = cp $(obj)/$@.dbg $(MODLIB)/vdso/vdso32.so
 
 vdso.so: $(obj)/vdso.so.dbg
