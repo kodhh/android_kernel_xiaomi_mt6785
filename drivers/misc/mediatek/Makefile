@@ -178,3 +178,5 @@ obj-$(CONFIG_XIAOMI_AKM09970)      +=akm09970.o
 obj-y += subpmic/
 obj-$(CONFIG_XIAOMI_MOTOR_DRV8846) +=drv8846.o
 obj-$(CONFIG_MTK_OTP) += otp/
+obj-y += fpsgo_cus/
+obj-y += udc/
