@@ -13,6 +13,8 @@
 
 obj-m += udc_lib.o
 
+ccflags-y += -Wno-deprecated-non-prototype -Wno-strict-prototypes
+
 udc_lib-y += \
     adler32.o \
     crc32.o \
