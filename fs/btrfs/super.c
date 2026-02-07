@@ -519,6 +519,14 @@ int btrfs_parse_options(struct btrfs_fs_info *info, char *options,
 			} else if (strcmp(args[0].from, "zstd") == 0) {
 				compress_type = "zstd";
 				info->compress_type = BTRFS_COMPRESS_ZSTD;
+				info->compress_level =
+					btrfs_compress_str2level(args[0].from);
+				/* 验证zstd级别范围 */
+				if (info->compress_level > 22) {
+						btrfs_info(info, "zstd compression level %u too high, max is 22", 
+							  info->compress_level);
+						info->compress_level = 22;
+					}
 				btrfs_set_opt(info->mount_opt, COMPRESS);
 				btrfs_clear_opt(info->mount_opt, NODATACOW);
 				btrfs_clear_opt(info->mount_opt, NODATASUM);
